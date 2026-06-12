@@ -1,4 +1,4 @@
-"""
+
 # Raccoonbot_Openvla
 **2021741026 송인규**
 
@@ -165,8 +165,3 @@ pip install -r requirements.txt
 ## 4-4. 클라이언트 실행 (MuJoCo 시뮬레이션)
 rollout 결과는 mp4 영상으로 저장됨
 python openvla_multicolor_client.py --server_url http://서버IP:8000 --xml_path Raccoon_colored_cylinder.xml --target_color red --use_viewer
-"""
-
-with open("/data/2021741026/Raccoonbot_Openvla/README.md", "w") as f:
-    f.write(readme_content)
-print("완료")
