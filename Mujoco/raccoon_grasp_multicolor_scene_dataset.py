@@ -147,6 +147,7 @@ class SyncSimRaccoonDataset:
         "blue": "target_object_blue",
         "green": "target_object_green",
         "yellow": "target_object_yellow",
+        "box": "target_object_box",
     }
     CYLINDER_COLORS = tuple(CYLINDER_BODY_BY_COLOR.keys())
 
@@ -816,6 +817,7 @@ def collect_dataset(
     num_episodes=100,
     colors=("red", "blue", "green", "yellow"),
     instruction_template="grasp the {color} cylinder",
+    instruction_templates=None,
     keep_failed=False,
     use_viewer=False,
     camera_name="front_view",
@@ -861,6 +863,12 @@ def collect_dataset(
     if len(colors) == 0:
         raise ValueError("colors는 비어 있을 수 없습니다.")
 
+    # instruction_templates가 있으면 우선 사용, 없으면 단일 template으로 래핑
+    if instruction_templates is None:
+        instruction_templates = [instruction_template]
+    else:
+        instruction_templates = list(instruction_templates)
+
     target_counts = _balanced_target_counts(num_episodes, colors)
     rng = np.random.default_rng(seed)
 
@@ -889,7 +897,8 @@ def collect_dataset(
             if target_color is None:
                 break
 
-            instruction = instruction_template.format(color=target_color)
+            template = instruction_templates[int(rng.integers(len(instruction_templates)))]
+            instruction = template.format(color=target_color)
             object_specs = SyncSimRaccoonDataset.sample_object_specs(
                 rng=rng,
                 colors=colors,
@@ -947,13 +956,45 @@ def collect_dataset(
         )
 
 
+CYLINDER_INSTRUCTION_TEMPLATES = [
+    "grasp the {color} cylinder",
+    "pick up the {color} cylinder",
+    "grab the {color} cylinder",
+    "lift the {color} cylinder",
+]
+
+BOX_INSTRUCTION_TEMPLATES = [
+    "grasp the orange box",
+    "pick up the orange box",
+    "grab the box",
+    "lift the orange box",
+]
+
+
 if __name__ == "__main__":
+    # Cylinder dataset with diverse instructions
     collect_dataset(
         xml_path="Raccoon_colored_cylinder.xml",
         dataset_root="raccoon_grasp_colored_cylinder",
         num_episodes=400,
         colors=("red", "blue", "green", "yellow"),
-        instruction_template="grasp the {color} cylinder",
+        instruction_templates=CYLINDER_INSTRUCTION_TEMPLATES,
+        keep_failed=False,
+        use_viewer=False,
+        camera_name="front_view",
+        initial_settle_seconds=0.1,
+        object_x_range=(-0.10, 0.10),
+        object_y_range=(0.16, 0.25),
+        min_object_distance=0.035,
+    )
+
+    # Box dataset with diverse instructions
+    collect_dataset(
+        xml_path="Raccoon_colored_cylinder.xml",
+        dataset_root="raccoon_grasp_box_dataset",
+        num_episodes=100,
+        colors=("box",),
+        instruction_templates=BOX_INSTRUCTION_TEMPLATES,
         keep_failed=False,
         use_viewer=False,
         camera_name="front_view",

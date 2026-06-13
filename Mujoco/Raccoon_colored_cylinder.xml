@@ -62,5 +62,15 @@
         solimp="0.99 0.99 0.001" solref="0.002 1"/>
     </body>
 
+    <!-- Orange box object (Dataset Extension) -->
+    <body name="target_object_box" pos="0.0 0.15 0.02">
+      <freejoint/>
+      <inertial pos="0 0 0" mass="0.05" diaginertia="0.00000001 0.00000001 0.00000001"/>
+      <geom name="geom_box" type="box" size="0.0125 0.0125 0.01"
+        rgba="1 0.5 0 1"
+        friction="1 1 1" condim="6"
+        solimp="0.99 0.99 0.001" solref="0.002 1"/>
+    </body>
+
   </worldbody>
 </mujoco>
